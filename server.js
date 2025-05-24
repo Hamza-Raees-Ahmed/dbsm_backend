@@ -128,10 +128,10 @@ app.get('/reservations', (req, res) => {
 
 const pool  = mysql.createPool({
   connectionLimit : 10,
-  host            : '127.0.0.1',
-  user            : 'root',
-  password        : 'Hmzavivo08@',
-  database        : 'dbms_project'
+  host            : 'host address',
+  user            : 'user name of the database',
+  password        : 'password of the database ',
+  database        : ' create the database eith this name "dbms_project"'
 });
  
 pool.query('SELECT 1 + 1 AS solution', function (error, results, fields) {

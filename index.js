@@ -8,6 +8,21 @@ const port = 4000;
 app.use(express.json());
 
 
+//testing theee api 
+app.get("/test",(req,res)=>{
+  res.status(200).send("everything working perfect")
+})
+
+
+
+
+
+
+
+
+
+/// add user through email and password
+
 app.post('/users', (req, res) => {
   const { user_name, user_email } = req.body;
 

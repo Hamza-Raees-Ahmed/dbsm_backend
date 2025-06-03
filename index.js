@@ -10,7 +10,7 @@ app.use(express.json());
 
 
 //testing theee api 
-app.get("/test",(req,res)=>{
+app.get("/api/test",(req,res)=>{
   res.status(200).send("everything working perfect")
 })
 

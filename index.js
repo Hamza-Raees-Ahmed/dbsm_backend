@@ -1,5 +1,6 @@
 import express from "express"
 import mysql from "mysql2"
+import ServerlessHttp from "serverless-http";
 
 const app = express();
 const port = 4000;
@@ -159,5 +160,6 @@ pool.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
 
 
 app.listen(port,()=>{
-    console.log("dserver is running on",port)
+    console.log("server is running on",port)
 })
+ServerlessHttp(app);

@@ -1,7 +1,7 @@
 {
   "name": "dbms_backend",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "nodemon index.js",
@@ -16,6 +16,7 @@
     "express": "^5.1.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.14.1",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "serverless-http": "^3.2.0"
   }
 }

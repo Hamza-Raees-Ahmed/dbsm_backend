@@ -1,6 +1,7 @@
 import express from "express"
 import mysql from "mysql2"
 import ServerlessHttp from "serverless-http";
+import cors from "cors";
 
 const app = express();
 const port = 4000;
@@ -8,9 +9,9 @@ const port = 4000;
 
 app.use(express.json());
 
-
+app.use(cors());
 //testing theee api 
-app.get("/api/test",(req,res)=>{
+app.get("/test",(req,res)=>{
   res.status(200).send("everything working perfect")
 })
 
@@ -49,11 +50,11 @@ app.post('/users', (req, res) => {
 
 //// get all the records from the mysql database 
 app.get('/menu', (req, res) => {
-  const query = 'SELECT * FROM products';
+  const query = 'SELECT * FROM menu';
 
   pool.query(query, (err, results) => {
     if (err) {
-      console.error('Error fetching products:', err);
+      console.error('Error fetching menu:', err);
       return res.status(500).json({ error: 'Database query failed' });
     }
 
@@ -65,57 +66,60 @@ app.get('/menu', (req, res) => {
 app.post('/add-menu', (req, res) => {
   const { menu_name, menu_category, menu_price, menu_description } = req.body;
 
+
   if (!menu_name || !menu_category || !menu_price) {
-    return res.status(400).json({ error: 'product_name, product_category, and project_id are required.' });
+    return res.status(400).json({ error: 'menu_name, menu_category, and menu_id are required.' });
   }
 
   console.log(menu_category,menu_price,menu_name);
   const query = `
-    INSERT INTO products (menu_name, menu_category, menu_id, menu_description)
+    INSERT INTO menu (menu_name, menu_category, menu_price, menu_description)
     VALUES (?, ?, ?, ?)
   `;
 
   pool.query(query, [menu_name, menu_category, menu_price, menu_description], (err, result) => {
     if (err) {
       console.error("Insert error:", err);
-      return res.status(500).json({ error: 'Database error while inserting product.' });
+      return res.status(500).json({ error: 'Database error while inserting menu.' });
     }
-    res.status(201).json({ message: 'Product added successfully', Id: result.insertId }); });
+    res.status(201).json({ message: 'menu added successfully', Id: result.insertId }); });
 });
 
-// DELETE: Remove product by ID
-app.delete('/menu/:id', (req, res) => {
-  const menuId = req.params.id;
- console.log(menuId,"menu id")
-  const query = 'DELETE FROM products WHERE id = ?';
+// DELETE: Remove menu by menu_name
+app.delete('/menu/:menu_id', (req, res) => {
+  const menu_id = req.params.menu_id;
+  console.log(menu_id, "menu id");
 
-  pool.query(query, [menuId], (err, result) => {
+  const query = 'DELETE FROM menu WHERE menu_id = ?';
+
+  pool.query(query, [menu_id], (err, result) => {
     if (err) {
       console.error('Delete error:', err);
-      return res.status(500).json({ error: 'Database error while deleting product' });
+      return res.status(500).json({ error: 'Database error while deleting menu' });
     }
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: 'Menu not found' });
     }
 
-    res.json({ message: 'Product deleted successfully' });
+    res.json({ message: 'Menu deleted successfully' });
   });
 });
 
-app.post('/reservations', (req, res) => {
-  const { user_id, date_time, guest_table } = req.body;
 
-  if (!user_id || !date_time || !guest_table) {
+app.post('/reservations', (req, res) => {
+  const { user_id, dated, guest_table } = req.body;
+
+  if (!user_id || !dated || !guest_table) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   const query = `
-    INSERT INTO reservations (user_id, date_time, guest_table)
+    INSERT INTO reservations (user_id, dated, guest_table)
     VALUES (?, ?, ?)
   `;
 
-  pool.query(query, [user_id, date_time, guest_table], (err, result) => {
+  pool.query(query, [user_id, dated, guest_table], (err, result) => {
     if (err) {
       console.error("Insert reservation error:", err);
       return res.status(500).json({ error: 'Database error while inserting reservation' });
@@ -127,9 +131,10 @@ app.post('/reservations', (req, res) => {
 
 
 
+
 // GET: Get all reservations
 app.get('/reservations', (req, res) => {
-  const query = 'SELECT * FROM reservations ORDER BY date_time ASC';
+  const query = 'SELECT * FROM reservations ORDER BY dated ASC';
 
   pool.query(query, (err, results) => {
     if (err) {
@@ -140,13 +145,35 @@ app.get('/reservations', (req, res) => {
     res.json(results);
   });
 });
+////// contact post api 
+app.post('/contact', (req, res) => {
+  const { user_name, user_email, user_message } = req.body;
+
+  if (!user_name || !user_email || !user_message) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  const query = `
+    INSERT INTO contacts (user_name, user_email, user_message)
+    VALUES (?, ?, ?)
+  `;
+
+  pool.query(query, [user_name, user_email, user_message], (err, result) => {
+    if (err) {
+      console.error('Error inserting contact message:', err);
+      return res.status(500).json({ error: 'Database error while saving contact message' });
+    }
+
+    res.status(201).json({ message: 'Message sent successfully!' });
+  });
+});
 
 
 const pool  = mysql.createPool({
   connectionLimit : 10,
   host            : '127.0.0.1',
   user            : 'root',
-  password        : 'Hmzavivo08@',
+  password        : ',
   database        : 'dbms_project'
 });
  
